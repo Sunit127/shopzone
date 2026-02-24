@@ -81,4 +81,4 @@ Before you begin, ensure you have the following installed:
 ## 🚀 Installation & Setup
 
 ### 1. Clone the Repository
-```bash
+https://github.com/Sunit127/shopzone.git
