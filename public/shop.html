@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopZone - Shop</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; }
+        body.light { background: #f5f5f5; color: #111; }
+        nav { background: linear-gradient(135deg, #6c00ff, #ff006e); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        nav .logo { font-size: 24px; font-weight: bold; }
+        nav a { color: #fff; text-decoration: none; margin-left: 12px; padding: 7px 15px; border-radius: 25px; transition: background 0.3s; font-size: 14px; }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+        .theme-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 7px 12px; border-radius: 25px; cursor: pointer; }
+        .shop-wrap { padding: 30px 40px; }
+        .shop-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .shop-top h2 { font-size: 28px; background: linear-gradient(135deg, #6c00ff, #ff006e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .search-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .search-bar input { padding: 10px 20px; background: #1e1e3a; border: 1px solid #6c00ff44; border-radius: 25px; color: #fff; outline: none; width: 250px; font-size: 14px; }
+        body.light .search-bar input { background: #fff; color: #111; border-color: #ddd; }
+        .price-filter { display: flex; gap: 10px; align-items: center; }
+        .price-filter input { width: 80px; padding: 8px 12px; background: #1e1e3a; border: 1px solid #6c00ff44; border-radius: 8px; color: #fff; outline: none; font-size: 13px; }
+        body.light .price-filter input { background: #fff; color: #111; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 20px; border-radius: 25px; border: 1px solid #6c00ff; background: transparent; color: #6c00ff; cursor: pointer; transition: all 0.3s; font-size: 13px; }
+        .filter-btn.active, .filter-btn:hover { background: linear-gradient(135deg, #6c00ff, #ff006e); color: #fff; border-color: transparent; }
+        .sort-select { padding: 8px 15px; background: #1e1e3a; border: 1px solid #6c00ff44; border-radius: 8px; color: #fff; outline: none; font-size: 13px; cursor: pointer; }
+        body.light .sort-select { background: #fff; color: #111; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .product-card { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 16px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        body.light .product-card { background: #fff; border-color: #ddd; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(108,0,255,0.3); }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; }
+        .wishlist-btn { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; transition: transform 0.2s; }
+        .wishlist-btn:hover { transform: scale(1.2); }
+        .product-info { padding: 18px; }
+        .category-tag { font-size: 11px; color: #ff9500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .product-info h3 { font-size: 18px; margin-bottom: 6px; cursor: pointer; }
+        .product-info h3:hover { color: #6c00ff; }
+        .product-info p { color: #aaa; font-size: 13px; margin-bottom: 12px; }
+        body.light .product-info p { color: #666; }
+        .stars { color: #ff9500; font-size: 13px; margin-bottom: 10px; }
+        .product-footer { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 20px; font-weight: bold; color: #ff006e; }
+        .add-btn { padding: 8px 18px; background: linear-gradient(135deg, #6c00ff, #ff006e); border: none; border-radius: 20px; color: #fff; cursor: pointer; font-size: 13px; font-weight: bold; transition: transform 0.2s; }
+        .add-btn:hover { transform: scale(1.05); }
+        .no-results { text-align: center; padding: 60px; color: #aaa; font-size: 20px; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #6c00ff, #ff006e); color: #fff; padding: 14px 24px; border-radius: 12px; font-weight: bold; display: none; z-index: 1000; box-shadow: 0 10px 30px rgba(108,0,255,0.4); }
+        .cart-count { background: #ff006e; color: #fff; border-radius: 50%; padding: 1px 7px; font-size: 11px; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="logo">🛍️ ShopZone</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/cart">🛒 <span class="cart-count" id="cartCount">0</span></a>
+        <a href="/orders" id="ordersLink" style="display:none">Orders</a>
+        <a href="/profile" id="profileLink" style="display:none">Profile</a>
+        <a href="/admin" id="adminLink" style="display:none">Admin</a>
+        <a href="#" id="logoutBtn" style="display:none" onclick="logout()">Logout</a>
+        <a href="/login" id="loginLink">Login</a>
+        <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+</nav>
+<div class="shop-wrap">
+    <div class="shop-top">
+        <h2>🛒 Our Products</h2>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search products..." oninput="applyFilters()" />
+            <div class="price-filter">
+                <span style="color:#aaa;font-size:13px">$</span>
+                <input type="number" id="minPrice" placeholder="Min" oninput="applyFilters()" />
+                <span style="color:#aaa">-</span>
+                <input type="number" id="maxPrice" placeholder="Max" oninput="applyFilters()" />
+            </div>
+            <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                <option value="">Sort By</option>
+                <option value="low">Price: Low to High</option>
+                <option value="high">Price: High to Low</option>
+                <option value="rating">Top Rated</option>
+            </select>
+        </div>
+    </div>
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="setCategory('All', this)">All</button>
+        <button class="filter-btn" onclick="setCategory('Shoes', this)">Shoes</button>
+        <button class="filter-btn" onclick="setCategory('Clothing', this)">Clothing</button>
+        <button class="filter-btn" onclick="setCategory('Electronics', this)">Electronics</button>
+        <button class="filter-btn" onclick="setCategory('Accessories', this)">Accessories</button>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+    let allProducts = [], currentCategory = "All"
+    const user = JSON.parse(localStorage.getItem("shopUser"))
+    let cart = JSON.parse(localStorage.getItem("cart")) || []
+
+    if (user) {
+        document.getElementById("logoutBtn").style.display = "inline-block"
+        document.getElementById("profileLink").style.display = "inline-block"
+        document.getElementById("ordersLink").style.display = "inline-block"
+        document.getElementById("loginLink").style.display = "none"
+        if (user.isAdmin) document.getElementById("adminLink").style.display = "inline-block"
+    }
+
+    document.getElementById("cartCount").textContent = cart.reduce((s, i) => s + i.qty, 0)
+
+    async function loadProducts() {
+        const res = await fetch("/api/products")
+        const data = await res.json()
+        allProducts = data.products
+        applyFilters()
+    }
+
+    function setCategory(cat, btn) {
+        currentCategory = cat
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"))
+        btn.classList.add("active")
+        applyFilters()
+    }
+
+    function applyFilters() {
+        const search = document.getElementById("searchInput").value.toLowerCase()
+        const min = parseFloat(document.getElementById("minPrice").value) || 0
+        const max = parseFloat(document.getElementById("maxPrice").value) || Infinity
+        const sort = document.getElementById("sortSelect").value
+        let filtered = allProducts.filter(p => {
+            const matchCat = currentCategory === "All" || p.category === currentCategory
+            const matchSearch = p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search)
+            const matchPrice = p.price >= min && p.price <= max
+            return matchCat && matchSearch && matchPrice
+        })
+        if (sort === "low") filtered.sort((a, b) => a.price - b.price)
+        else if (sort === "high") filtered.sort((a, b) => b.price - a.price)
+        else if (sort === "rating") filtered.sort((a, b) => b.rating - a.rating)
+        renderProducts(filtered)
+    }
+
+    function renderProducts(products) {
+        const grid = document.getElementById("productsGrid")
+        if (products.length === 0) { grid.innerHTML = '<div class="no-results">😕 No products found</div>'; return }
+        const wishlist = user ? (user.wishlist || []) : []
+        grid.innerHTML = products.map(p => `
+            <div class="product-card">
+                <img src="${p.image}" alt="${p.name}" onclick="window.location.href='/product?id=${p.id}'" />
+                <button class="wishlist-btn" onclick="toggleWishlist(${p.id}, this)">${wishlist.includes(p.id) ? "❤️" : "🤍"}</button>
+                <div class="product-info">
+                    <div class="category-tag">${p.category}</div>
+                    <h3 onclick="window.location.href='/product?id=${p.id}'">${p.name}</h3>
+                    <p>${p.description}</p>
+                    <div class="stars">${getStars(p.rating)} (${p.reviews.length})</div>
+                    <div class="product-footer">
+                        <span class="price">$${p.price}</span>
+                        <button class="add-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price}, '${p.image}')">+ Cart</button>
+                    </div>
+                </div>
+            </div>`).join("")
+    }
+
+    function getStars(rating) {
+        const full = Math.floor(rating), half = rating % 1 >= 0.5
+        return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(5 - full - (half ? 1 : 0))
+    }
+
+    function addToCart(id, name, price, image) {
+        const existing = cart.find(i => i.id === id)
+        if (existing) existing.qty++
+        else cart.push({ id, name, price, image, qty: 1 })
+        localStorage.setItem("cart", JSON.stringify(cart))
+        document.getElementById("cartCount").textContent = cart.reduce((s, i) => s + i.qty, 0)
+        showToast(`✅ ${name} added to cart!`)
+    }
+
+    async function toggleWishlist(productId, btn) {
+        if (!user) { window.location.href = "/login"; return }
+        const res = await fetch("/api/wishlist/toggle", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: user.id, productId }) })
+        const data = await res.json()
+        if (data.success) {
+            user.wishlist = data.wishlist
+            localStorage.setItem("shopUser", JSON.stringify(user))
+            btn.textContent = data.wishlist.includes(productId) ? "❤️" : "🤍"
+        }
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById("toast")
+        t.textContent = msg; t.style.display = "block"
+        setTimeout(() => t.style.display = "none", 2500)
+    }
+
+    function logout() { localStorage.removeItem("shopUser"); localStorage.removeItem("cart"); window.location.href = "/" }
+    function toggleTheme() { document.body.classList.toggle("light"); localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark") }
+    if (localStorage.getItem("theme") === "light") document.body.classList.add("light")
+
+    loadProducts()
+</script>
+</body>
+</html>

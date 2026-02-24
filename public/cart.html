@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopZone - Cart</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; }
+        body.light { background: #f5f5f5; color: #111; }
+        nav { background: linear-gradient(135deg, #6c00ff, #ff006e); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        nav .logo { font-size: 24px; font-weight: bold; }
+        nav a { color: #fff; text-decoration: none; margin-left: 12px; padding: 7px 15px; border-radius: 25px; transition: background 0.3s; font-size: 14px; }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+        .wrap { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        h2 { font-size: 28px; background: linear-gradient(135deg, #6c00ff, #ff006e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 25px; }
+        .empty { text-align: center; padding: 80px; color: #aaa; }
+        .empty a { color: #6c00ff; text-decoration: none; font-weight: bold; }
+        .cart-item { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 14px; padding: 20px; display: flex; align-items: center; gap: 20px; margin-bottom: 15px; }
+        body.light .cart-item { background: #fff; border-color: #ddd; }
+        .cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h3 { font-size: 18px; margin-bottom: 5px; }
+        .cart-item-info p { color: #ff006e; font-weight: bold; font-size: 16px; }
+        .qty-controls { display: flex; align-items: center; gap: 12px; }
+        .qty-btn { background: linear-gradient(135deg, #6c00ff, #ff006e); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .qty-num { font-size: 18px; font-weight: bold; min-width: 30px; text-align: center; }
+        .remove-btn { background: #ff006e22; border: 1px solid #ff006e44; color: #ff006e; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: background 0.3s; }
+        .remove-btn:hover { background: #ff006e44; }
+        .summary { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 14px; padding: 25px; margin-top: 20px; }
+        body.light .summary { background: #fff; border-color: #ddd; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: #aaa; }
+        body.light .summary-row { color: #555; }
+        .summary-total { display: flex; justify-content: space-between; font-size: 22px; font-weight: bold; color: #ff006e; border-top: 1px solid #6c00ff44; padding-top: 15px; margin-top: 5px; }
+        .checkout-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #6c00ff, #ff006e); border: none; border-radius: 12px; color: #fff; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: opacity 0.2s; }
+        .checkout-btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="logo">🛍️ ShopZone</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/orders">Orders</a>
+        <a href="/profile">Profile</a>
+    </div>
+</nav>
+<div class="wrap">
+    <h2>🛒 Your Cart</h2>
+    <div id="cartContent"></div>
+</div>
+<script>
+    if (localStorage.getItem("theme") === "light") document.body.classList.add("light")
+    let cart = JSON.parse(localStorage.getItem("cart")) || []
+
+    function render() {
+        const el = document.getElementById("cartContent")
+        if (cart.length === 0) { el.innerHTML = '<div class="empty"><p style="font-size:50px">🛒</p><p style="font-size:20px;margin:15px 0">Your cart is empty</p><a href="/shop">Continue Shopping</a></div>'; return }
+        const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0)
+        const shipping = subtotal > 100 ? 0 : 10
+        const total = subtotal + shipping
+        el.innerHTML = cart.map((item, idx) => `
+            <div class="cart-item">
+                <img src="${item.image}" alt="${item.name}" />
+                <div class="cart-item-info">
+                    <h3>${item.name}</h3>
+                    <p>$${item.price} each</p>
+                </div>
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="changeQty(${idx}, -1)">−</button>
+                    <span class="qty-num">${item.qty}</span>
+                    <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+                </div>
+                <div style="font-size:18px;font-weight:bold;color:#ff9500;min-width:70px;text-align:right">$${(item.price * item.qty).toFixed(2)}</div>
+                <button class="remove-btn" onclick="removeItem(${idx})">🗑 Remove</button>
+            </div>`).join("") + `
+            <div class="summary">
+                <div class="summary-row"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+                <div class="summary-row"><span>Shipping</span><span>${shipping === 0 ? "FREE 🎉" : "$" + shipping}</span></div>
+                <div class="summary-total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+                <button class="checkout-btn" onclick="window.location.href='/checkout'">Proceed to Checkout →</button>
+            </div>`
+    }
+
+    function changeQty(idx, delta) {
+        cart[idx].qty += delta
+        if (cart[idx].qty <= 0) cart.splice(idx, 1)
+        localStorage.setItem("cart", JSON.stringify(cart))
+        render()
+    }
+
+    function removeItem(idx) { cart.splice(idx, 1); localStorage.setItem("cart", JSON.stringify(cart)); render() }
+    render()
+</script>
+</body>
+</html>

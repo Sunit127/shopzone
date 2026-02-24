@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopZone - Orders</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; }
+        body.light { background: #f5f5f5; color: #111; }
+        nav { background: linear-gradient(135deg, #6c00ff, #ff006e); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        nav .logo { font-size: 24px; font-weight: bold; }
+        nav a { color: #fff; text-decoration: none; margin-left: 12px; padding: 7px 15px; border-radius: 25px; font-size: 14px; }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+        .wrap { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        h2 { font-size: 28px; background: linear-gradient(135deg, #6c00ff, #ff006e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 25px; }
+        .order-card { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        body.light .order-card { background: #fff; border-color: #ddd; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .order-id { font-size: 13px; color: #aaa; }
+        .order-date { font-size: 13px; color: #aaa; }
+        .status { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .status.Pending { background: #ff950022; color: #ff9500; }
+        .status.Processing { background: #6c00ff22; color: #a855f7; }
+        .status.Shipped { background: #00c89622; color: #00c896; }
+        .status.Delivered { background: #00ff6422; color: #00ff64; }
+        .status.Cancelled { background: #ff006e22; color: #ff006e; }
+        .order-items { border-top: 1px solid #6c00ff22; padding-top: 15px; }
+        .order-item-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; color: #aaa; }
+        body.light .order-item-row { color: #555; }
+        .order-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #ff006e; border-top: 1px solid #6c00ff22; padding-top: 12px; margin-top: 8px; }
+        .address { font-size: 13px; color: #aaa; margin-top: 10px; }
+        .tracking { display: flex; gap: 0; margin-top: 20px; }
+        .track-step { flex: 1; text-align: center; position: relative; }
+        .track-step::before { content: ''; position: absolute; top: 14px; left: 50%; width: 100%; height: 2px; background: #6c00ff22; z-index: 0; }
+        .track-step:last-child::before { display: none; }
+        .track-dot { width: 28px; height: 28px; border-radius: 50%; background: #1e1e3a; border: 2px solid #6c00ff44; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 12px; position: relative; z-index: 1; }
+        .track-dot.done { background: linear-gradient(135deg, #6c00ff, #ff006e); border-color: transparent; }
+        .track-label { font-size: 11px; color: #aaa; }
+        .empty { text-align: center; padding: 80px; color: #aaa; }
+        .empty a { color: #6c00ff; text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="logo">🛍️ ShopZone</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/profile">Profile</a>
+    </div>
+</nav>
+<div class="wrap">
+    <h2>📦 My Orders</h2>
+    <div id="ordersContent"></div>
+</div>
+<script>
+    if (localStorage.getItem("theme") === "light") document.body.classList.add("light")
+    const user = JSON.parse(localStorage.getItem("shopUser"))
+    if (!user) { window.location.href = "/login"; }
+
+    const statusSteps = ["Pending", "Processing", "Shipped", "Delivered"]
+
+    async function loadOrders() {
+        const res = await fetch(`/api/orders/user/${user.id}`)
+        const data = await res.json()
+        const el = document.getElementById("ordersContent")
+        if (data.orders.length === 0) { el.innerHTML = '<div class="empty"><p style="font-size:50px">📦</p><p style="font-size:20px;margin:15px 0">No orders yet</p><a href="/shop">Start Shopping</a></div>'; return }
+        el.innerHTML = data.orders.reverse().map(o => {
+            const stepIdx = statusSteps.indexOf(o.status)
+            return `<div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #${o.id}</div>
+                        <div class="order-date">📅 ${o.date} at ${o.time}</div>
+                    </div>
+                    <span class="status ${o.status}">${o.status}</span>
+                </div>
+                <div class="tracking">
+                    ${statusSteps.map((s, i) => `<div class="track-step"><div class="track-dot ${i <= stepIdx ? 'done' : ''}">${i <= stepIdx ? '✓' : i + 1}</div><div class="track-label">${s}</div></div>`).join("")}
+                </div>
+                <div class="order-items">
+                    ${o.items.map(i => `<div class="order-item-row"><span>${i.name} x${i.qty}</span><span>$${(i.price * i.qty).toFixed(2)}</span></div>`).join("")}
+                    <div class="order-total"><span>Total</span><span>$${o.total}</span></div>
+                </div>
+                <div class="address">📍 ${o.address}</div>
+            </div>`
+        }).join("")
+    }
+    loadOrders()
+</script>
+</body>
+</html>

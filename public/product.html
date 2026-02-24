@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopZone - Product</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; }
+        body.light { background: #f5f5f5; color: #111; }
+        nav { background: linear-gradient(135deg, #6c00ff, #ff006e); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        nav .logo { font-size: 24px; font-weight: bold; }
+        nav a { color: #fff; text-decoration: none; margin-left: 12px; padding: 7px 15px; border-radius: 25px; font-size: 14px; }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+        .wrap { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        @media(max-width:700px) { .product-detail { grid-template-columns: 1fr; } }
+        .product-img { border-radius: 16px; overflow: hidden; }
+        .product-img img { width: 100%; border-radius: 16px; }
+        .product-info h1 { font-size: 32px; margin-bottom: 10px; }
+        .category-tag { font-size: 12px; color: #ff9500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .stars { color: #ff9500; font-size: 20px; margin-bottom: 8px; }
+        .review-count { color: #aaa; font-size: 14px; margin-bottom: 15px; }
+        .price { font-size: 36px; font-weight: bold; color: #ff006e; margin-bottom: 20px; }
+        .desc { color: #aaa; font-size: 15px; line-height: 1.7; margin-bottom: 25px; }
+        body.light .desc { color: #555; }
+        .qty-wrap { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .qty-btn { background: linear-gradient(135deg, #6c00ff, #ff006e); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; }
+        .qty-num { font-size: 20px; font-weight: bold; min-width: 30px; text-align: center; }
+        .action-btns { display: flex; gap: 15px; flex-wrap: wrap; }
+        .cart-btn { flex: 1; padding: 14px; background: linear-gradient(135deg, #6c00ff, #ff006e); border: none; border-radius: 12px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }
+        .cart-btn:hover { opacity: 0.9; }
+        .wish-btn { padding: 14px 20px; border: 2px solid #6c00ff; border-radius: 12px; background: transparent; color: #6c00ff; font-size: 16px; cursor: pointer; transition: all 0.3s; }
+        .wish-btn:hover { background: #6c00ff22; }
+        .reviews-section { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 16px; padding: 30px; }
+        body.light .reviews-section { background: #fff; border-color: #ddd; }
+        .reviews-section h3 { font-size: 22px; margin-bottom: 20px; color: #ff9500; }
+        .review-form { background: #0f0f1a; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        body.light .review-form { background: #f5f5f5; }
+        .review-form h4 { margin-bottom: 15px; color: #aaa; }
+        .star-select { display: flex; gap: 8px; margin-bottom: 15px; }
+        .star-select span { font-size: 28px; cursor: pointer; transition: transform 0.2s; }
+        .star-select span:hover { transform: scale(1.2); }
+        .review-form textarea { width: 100%; padding: 12px; background: #1e1e3a; border: 1px solid #6c00ff44; border-radius: 10px; color: #fff; font-size: 14px; outline: none; resize: vertical; min-height: 80px; }
+        body.light .review-form textarea { background: #fff; color: #111; }
+        .submit-review { padding: 10px 25px; background: linear-gradient(135deg, #6c00ff, #ff006e); border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .review-card { border-bottom: 1px solid #6c00ff22; padding: 15px 0; }
+        .review-card:last-child { border: none; }
+        .review-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .reviewer { font-weight: bold; font-size: 15px; }
+        .review-date { color: #aaa; font-size: 12px; }
+        .review-stars { color: #ff9500; font-size: 14px; margin-bottom: 6px; }
+        .review-comment { color: #aaa; font-size: 14px; }
+        body.light .review-comment { color: #555; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #6c00ff, #ff006e); color: #fff; padding: 14px 24px; border-radius: 12px; font-weight: bold; display: none; z-index: 1000; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="logo">🛍️ ShopZone</div>
+    <div><a href="/">Home</a><a href="/shop">← Back to Shop</a><a href="/cart">🛒 Cart</a></div>
+</nav>
+<div class="wrap">
+    <div class="product-detail" id="productDetail"></div>
+    <div class="reviews-section">
+        <h3>⭐ Reviews</h3>
+        <div class="review-form">
+            <h4>Write a Review</h4>
+            <div class="star-select" id="starSelect">
+                <span onclick="setRating(1)">⭐</span><span onclick="setRating(2)">⭐</span>
+                <span onclick="setRating(3)">⭐</span><span onclick="setRating(4)">⭐</span><span onclick="setRating(5)">⭐</span>
+            </div>
+            <textarea id="reviewComment" placeholder="Share your experience..."></textarea>
+            <button class="submit-review" onclick="submitReview()">Submit Review</button>
+        </div>
+        <div id="reviewsList"></div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+    if (localStorage.getItem("theme") === "light") document.body.classList.add("light")
+    const user = JSON.parse(localStorage.getItem("shopUser"))
+    let cart = JSON.parse(localStorage.getItem("cart")) || []
+    let qty = 1, selectedRating = 5
+    const id = new URLSearchParams(window.location.search).get("id")
+
+    function setRating(r) {
+        selectedRating = r
+        document.querySelectorAll("#starSelect span").forEach((s, i) => s.style.opacity = i < r ? "1" : "0.3")
+    }
+    setRating(5)
+
+    async function load() {
+        const res = await fetch(`/api/products/${id}`)
+        const data = await res.json()
+        if (!data.success) { document.getElementById("productDetail").innerHTML = '<p style="color:#ff006e">Product not found</p>'; return }
+        const p = data.product
+        const wishlist = user ? (user.wishlist || []) : []
+        document.title = `ShopZone - ${p.name}`
+        document.getElementById("productDetail").innerHTML = `
+            <div class="product-img"><img src="${p.image}" alt="${p.name}" /></div>
+            <div class="product-info">
+                <div class="category-tag">${p.category}</div>
+                <h1>${p.name}</h1>
+                <div class="stars">${getStars(p.rating)}</div>
+                <div class="review-count">${p.reviews.length} reviews</div>
+                <div class="price">$${p.price}</div>
+                <p class="desc">${p.description}</p>
+                <div class="qty-wrap">
+                    <span style="color:#aaa">Quantity:</span>
+                    <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                    <span class="qty-num" id="qtyNum">1</span>
+                    <button class="qty-btn" onclick="changeQty(1)">+</button>
+                </div>
+                <div class="action-btns">
+                    <button class="cart-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.price}, '${p.image}')">🛒 Add to Cart</button>
+                    <button class="wish-btn" id="wishBtn" onclick="toggleWishlist(${p.id})">${wishlist.includes(p.id) ? "❤️" : "🤍"}</button>
+                </div>
+            </div>`
+        renderReviews(p.reviews)
+    }
+
+    function changeQty(d) { qty = Math.max(1, qty + d); document.getElementById("qtyNum").textContent = qty }
+
+    function addToCart(id, name, price, image) {
+        for (let i = 0; i < qty; i++) {
+            const existing = cart.find(i => i.id === id)
+            if (existing) existing.qty++
+            else cart.push({ id, name, price, image, qty: 1 })
+        }
+        localStorage.setItem("cart", JSON.stringify(cart))
+        showToast(`✅ ${qty}x ${name} added to cart!`)
+    }
+
+    async function toggleWishlist(productId) {
+        if (!user) { window.location.href = "/login"; return }
+        const res = await fetch("/api/wishlist/toggle", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId: user.id, productId }) })
+        const data = await res.json()
+        if (data.success) {
+            user.wishlist = data.wishlist
+            localStorage.setItem("shopUser", JSON.stringify(user))
+            document.getElementById("wishBtn").textContent = data.wishlist.includes(productId) ? "❤️" : "🤍"
+        }
+    }
+
+    async function submitReview() {
+        if (!user) { showToast("❌ Please login to review!"); return }
+        const comment = document.getElementById("reviewComment").value
+        if (!comment) { showToast("❌ Please write a comment!"); return }
+        const res = await fetch(`/api/products/${id}/review`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userName: user.name, rating: selectedRating, comment }) })
+        const data = await res.json()
+        if (data.success) { showToast("✅ Review submitted!"); document.getElementById("reviewComment").value = ""; load() }
+    }
+
+    function renderReviews(reviews) {
+        const el = document.getElementById("reviewsList")
+        if (reviews.length === 0) { el.innerHTML = '<p style="color:#aaa;text-align:center;padding:20px">No reviews yet. Be the first!</p>'; return }
+        el.innerHTML = reviews.map(r => `
+            <div class="review-card">
+                <div class="review-top"><span class="reviewer">👤 ${r.userName}</span><span class="review-date">${r.date}</span></div>
+                <div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+                <div class="review-comment">${r.comment}</div>
+            </div>`).join("")
+    }
+
+    function getStars(rating) {
+        const full = Math.floor(rating)
+        return "★".repeat(full) + "☆".repeat(5 - full) + ` ${rating}/5`
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById("toast"); t.textContent = msg; t.style.display = "block"
+        setTimeout(() => t.style.display = "none", 2500)
+    }
+    load()
+</script>
+</body>
+</html>

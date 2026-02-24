@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopZone - Home</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; transition: background 0.3s, color 0.3s; }
+        body.light { background: #f5f5f5; color: #111; }
+        nav { background: linear-gradient(135deg, #6c00ff, #ff006e); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(108,0,255,0.4); position: sticky; top: 0; z-index: 100; }
+        nav .logo { font-size: 26px; font-weight: bold; letter-spacing: 2px; }
+        nav .nav-links { display: flex; align-items: center; gap: 5px; }
+        nav .nav-links a { color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 25px; transition: background 0.3s; font-size: 14px; }
+        nav .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        .theme-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 8px 14px; border-radius: 25px; cursor: pointer; font-size: 16px; }
+        .hero { text-align: center; padding: 100px 20px; background: linear-gradient(180deg, #1a0035 0%, #0f0f1a 100%); }
+        body.light .hero { background: linear-gradient(180deg, #e8d5ff 0%, #f5f5f5 100%); }
+        .hero h1 { font-size: 60px; background: linear-gradient(135deg, #6c00ff, #ff006e, #ff9500); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 20px; color: #aaa; margin: 20px 0 40px; }
+        body.light .hero p { color: #555; }
+        .btns a { padding: 14px 36px; border-radius: 30px; text-decoration: none; font-size: 16px; font-weight: bold; margin: 10px; display: inline-block; transition: transform 0.2s; }
+        .btns a:hover { transform: scale(1.05); }
+        .btn-primary { background: linear-gradient(135deg, #6c00ff, #ff006e); color: #fff; }
+        .btn-secondary { border: 2px solid #6c00ff; color: #6c00ff; }
+        .features { display: flex; justify-content: center; gap: 30px; padding: 60px 40px; flex-wrap: wrap; }
+        .feature-card { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 16px; padding: 30px; width: 220px; text-align: center; transition: transform 0.3s; }
+        body.light .feature-card { background: #fff; border-color: #ddd; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .feature-card:hover { transform: translateY(-10px); }
+        .feature-card .icon { font-size: 40px; margin-bottom: 15px; }
+        .feature-card h3 { color: #ff006e; margin-bottom: 10px; }
+        .feature-card p { color: #aaa; font-size: 14px; }
+        body.light .feature-card p { color: #666; }
+        .greeting { background: linear-gradient(135deg, #1e1e3a, #2a1a4a); border: 1px solid #6c00ff44; border-radius: 16px; padding: 20px 40px; margin: 0 40px 20px; display: none; align-items: center; justify-content: space-between; }
+        body.light .greeting { background: #fff; border-color: #ddd; }
+        .greeting h3 { color: #ff9500; }
+        .stats { display: flex; justify-content: center; gap: 20px; padding: 20px 40px 60px; flex-wrap: wrap; }
+        .stat { background: linear-gradient(135deg, #6c00ff22, #ff006e22); border: 1px solid #6c00ff44; border-radius: 12px; padding: 20px 40px; text-align: center; }
+        .stat h2 { font-size: 36px; background: linear-gradient(135deg, #6c00ff, #ff006e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat p { color: #aaa; font-size: 14px; }
+        footer { text-align: center; padding: 30px; color: #555; border-top: 1px solid #1e1e3a; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="logo">🛍️ ShopZone</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/cart">🛒 Cart</a>
+        <a href="/login" id="loginLink">Login</a>
+        <a href="/signup" id="signupLink">Signup</a>
+        <a href="/profile" id="profileLink" style="display:none">Profile</a>
+        <a href="/orders" id="ordersLink" style="display:none">Orders</a>
+        <a href="/admin" id="adminLink" style="display:none">Admin</a>
+        <a href="#" id="logoutBtn" style="display:none" onclick="logout()">Logout</a>
+        <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+</nav>
+<div class="greeting" id="greeting">
+    <h3 id="greetingText"></h3>
+    <a href="/shop" class="btn-primary" style="padding:10px 25px;border-radius:25px;text-decoration:none;color:#fff">Browse Shop →</a>
+</div>
+<div class="hero">
+    <h1>Welcome to ShopZone</h1>
+    <p>Discover amazing products at unbeatable prices</p>
+    <div class="btns">
+        <a href="/shop" class="btn-primary">🛒 Shop Now</a>
+        <a href="/signup" class="btn-secondary">Create Account</a>
+    </div>
+</div>
+<div class="stats">
+    <div class="stat"><h2>500+</h2><p>Products</p></div>
+    <div class="stat"><h2>10K+</h2><p>Happy Customers</p></div>
+    <div class="stat"><h2>50+</h2><p>Brands</p></div>
+    <div class="stat"><h2>24/7</h2><p>Support</p></div>
+</div>
+<div class="features">
+    <div class="feature-card"><div class="icon">🚀</div><h3>Fast Delivery</h3><p>Get products delivered quickly</p></div>
+    <div class="feature-card"><div class="icon">🔒</div><h3>Secure Payment</h3><p>Safe and encrypted transactions</p></div>
+    <div class="feature-card"><div class="icon">🎁</div><h3>Best Deals</h3><p>Exclusive discounts daily</p></div>
+    <div class="feature-card"><div class="icon">💬</div><h3>24/7 Support</h3><p>Always here to help you</p></div>
+    <div class="feature-card"><div class="icon">↩️</div><h3>Easy Returns</h3><p>30-day return policy</p></div>
+</div>
+<footer><p>© 2024 ShopZone. All rights reserved.</p></footer>
+<script>
+    const user = JSON.parse(localStorage.getItem("shopUser"))
+    if (user) {
+        document.getElementById("loginLink").style.display = "none"
+        document.getElementById("signupLink").style.display = "none"
+        document.getElementById("logoutBtn").style.display = "inline-block"
+        document.getElementById("profileLink").style.display = "inline-block"
+        document.getElementById("ordersLink").style.display = "inline-block"
+        if (user.isAdmin) document.getElementById("adminLink").style.display = "inline-block"
+        document.getElementById("greeting").style.display = "flex"
+        document.getElementById("greetingText").textContent = `👋 Welcome back, ${user.name}!`
+    }
+    function logout() { localStorage.removeItem("shopUser"); localStorage.removeItem("cart"); window.location.href = "/" }
+    function toggleTheme() {
+        document.body.classList.toggle("light")
+        localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark")
+        document.querySelector(".theme-btn").textContent = document.body.classList.contains("light") ? "🌙" : "☀️"
+    }
+    if (localStorage.getItem("theme") === "light") { document.body.classList.add("light"); document.querySelector(".theme-btn").textContent = "🌙" }
+</script>
+</body>
+</html>

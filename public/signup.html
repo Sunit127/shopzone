@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopZone - Signup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        body.light { background: #f5f5f5; color: #111; }
+
+        nav {
+            background: linear-gradient(135deg, #6c00ff, #ff006e);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(108,0,255,0.4);
+        }
+        nav .logo { font-size: 26px; font-weight: bold; }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 12px;
+            padding: 8px 18px;
+            border-radius: 25px;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+        nav a:hover { background: rgba(255,255,255,0.2); }
+        .theme-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1e1e3a, #2a1a4a);
+            border: 1px solid #6c00ff44;
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 430px;
+            box-shadow: 0 20px 60px rgba(108,0,255,0.2);
+        }
+        body.light .card { background: #fff; border-color: #ddd; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+
+        .card-icon { text-align: center; font-size: 50px; margin-bottom: 10px; }
+
+        .card h2 {
+            text-align: center;
+            font-size: 30px;
+            background: linear-gradient(135deg, #6c00ff, #ff006e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .card .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        body.light .card .subtitle { color: #666; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        body.light .form-group label { color: #555; }
+
+        .input-wrap { position: relative; }
+        .input-wrap .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 13px 16px 13px 42px;
+            background: #0f0f1a;
+            border: 1px solid #6c00ff44;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        body.light .form-group input { background: #f5f5f5; color: #111; border-color: #ddd; }
+        .form-group input:focus {
+            border-color: #6c00ff;
+            box-shadow: 0 0 0 3px rgba(108,0,255,0.1);
+        }
+
+        .password-strength { margin-top: 8px; }
+        .strength-bar {
+            height: 4px;
+            border-radius: 4px;
+            background: #6c00ff22;
+            margin-bottom: 4px;
+            overflow: hidden;
+        }
+        .strength-fill {
+            height: 100%;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+        .strength-text { font-size: 12px; color: #aaa; }
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #aaa;
+        }
+        .terms input { width: auto; padding: 0; margin-top: 2px; }
+        .terms a { color: #6c00ff; text-decoration: none; }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6c00ff, #ff006e);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn:hover { transform: scale(1.02); opacity: 0.92; }
+        .btn:active { transform: scale(0.98); }
+
+        .msg {
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+        }
+        .msg.success { background: rgba(0,255,100,0.1); color: #00ff64; border: 1px solid #00ff6444; }
+        .msg.error { background: rgba(255,0,100,0.1); color: #ff006e; border: 1px solid #ff006e44; }
+
+        .perks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 22px 0;
+        }
+        .perk {
+            background: #6c00ff11;
+            border: 1px solid #6c00ff22;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        body.light .perk { background: #f0eaff; border-color: #ddd; }
+
+        .switch {
+            text-align: center;
+            margin-top: 22px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        .switch a { color: #6c00ff; text-decoration: none; font-weight: bold; }
+        .switch a:hover { text-decoration: underline; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            font-size: 13px;
+            border-top: 1px solid #1e1e3a;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">🛍️ ShopZone</div>
+    <div>
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/login">Login</a>
+        <button class="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <div class="card-icon">🎉</div>
+        <h2>Create Account</h2>
+        <p class="subtitle">Join ShopZone and start shopping today!</p>
+
+        <div class="perks">
+            <div class="perk">🛒 Shop 500+ Products</div>
+            <div class="perk">❤️ Save Wishlists</div>
+            <div class="perk">📦 Track Orders</div>
+            <div class="perk">🎁 Exclusive Deals</div>
+        </div>
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-wrap">
+                <span class="icon">👤</span>
+                <input type="text" id="name" placeholder="Enter your full name" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrap">
+                <span class="icon">📧</span>
+                <input type="email" id="email" placeholder="Enter your email" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+                <span class="icon">🔒</span>
+                <input type="password" id="password" placeholder="Create a strong password" oninput="checkStrength(this.value)" onkeydown="if(event.key==='Enter') signup()" />
+            </div>
+            <div class="password-strength">
+                <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                <div class="strength-text" id="strengthText"></div>
+            </div>
+        </div>
+
+        <div class="terms">
+            <input type="checkbox" id="terms" />
+            <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+
+        <button class="btn" onclick="signup()">🚀 Create My Account</button>
+
+        <div class="msg" id="msg"></div>
+
+        <div class="switch">
+            Already have an account? <a href="/login">Login here</a>
+        </div>
+    </div>
+</div>
+
+<footer>© 2024 ShopZone. All rights reserved.</footer>
+
+<script>
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light")
+        document.querySelector(".theme-btn").textContent = "🌙"
+    }
+
+    function checkStrength(val) {
+        const fill = document.getElementById("strengthFill")
+        const text = document.getElementById("strengthText")
+        if (val.length === 0) { fill.style.width = "0%"; text.textContent = ""; return }
+        let score = 0
+        if (val.length >= 6) score++
+        if (val.length >= 10) score++
+        if (/[A-Z]/.test(val)) score++
+        if (/[0-9]/.test(val)) score++
+        if (/[^A-Za-z0-9]/.test(val)) score++
+        const levels = [
+            { w: "20%", c: "#ff006e", t: "Very Weak" },
+            { w: "40%", c: "#ff9500", t: "Weak" },
+            { w: "60%", c: "#ffcc00", t: "Fair" },
+            { w: "80%", c: "#00c896", t: "Strong" },
+            { w: "100%", c: "#00ff64", t: "Very Strong 💪" }
+        ]
+        const lvl = levels[Math.min(score - 1, 4)] || levels[0]
+        fill.style.width = lvl.w
+        fill.style.background = lvl.c
+        text.textContent = lvl.t
+        text.style.color = lvl.c
+    }
+
+    async function signup() {
+        const name = document.getElementById("name").value.trim()
+        const email = document.getElementById("email").value.trim()
+        const password = document.getElementById("password").value.trim()
+        const agreed = document.getElementById("terms").checked
+
+        if (!name || !email || !password) {
+            showMsg("❌ Please fill in all fields!", "error")
+            return
+        }
+        if (!agreed) {
+            showMsg("❌ Please agree to the Terms of Service!", "error")
+            return
+        }
+        if (password.length < 6) {
+            showMsg("❌ Password must be at least 6 characters!", "error")
+            return
+        }
+
+        const btn = document.querySelector(".btn")
+        btn.textContent = "⏳ Creating account..."
+        btn.disabled = true
+
+        try {
+            const res = await fetch("/api/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password })
+            })
+            const data = await res.json()
+
+            if (data.success) {
+                showMsg("✅ Account created! Redirecting to login...", "success")
+                setTimeout(() => window.location.href = "/login", 2000)
+            } else {
+                showMsg("❌ " + data.message, "error")
+                btn.textContent = "🚀 Create My Account"
+                btn.disabled = false
+            }
+        } catch {
+            showMsg("❌ Something went wrong! Try again.", "error")
+            btn.textContent = "🚀 Create My Account"
+            btn.disabled = false
+        }
+    }
+
+    function showMsg(text, type) {
+        const msg = document.getElementById("msg")
+        msg.textContent = text
+        msg.className = "msg " + type
+        msg.style.display = "block"
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle("light")
+        localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark")
+        document.querySelector(".theme-btn").textContent = document.body.classList.contains("light") ? "🌙" : "☀️"
+    }
+</script>
+
+</body>
+</html>
